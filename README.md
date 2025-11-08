@@ -11,12 +11,14 @@ Provides cognitive scaffolding for AI agents to maintain focus through long, com
 ## The Problem It Solves
 
 **Typical failure pattern:**
+
 1. AI gets complex task, creates plan [Step 1, Step 2, Step 3, Step 4, Step 5]
 2. Completes steps 1-2, context fills with results (30k+ tokens)
 3. At step 3: AI forgets original plan buried in context
 4. Risk: AI wanders, declares done prematurely, abandons steps 4-5
 
 **Solution:**
+
 - AI creates todo list using this tool
 - Hook injects reminders before each turn
 - AI sees: "✓1 done, ✓2 done, ☐3 pending, ☐4 pending, ☐5 pending"
@@ -36,7 +38,7 @@ Add to your profile:
 tools:
   - module: tool-todo
     source: git+https://github.com/microsoft/amplifier-module-tool-todo@main
-    config: {}  # No configuration needed
+    config: {} # No configuration needed
 ```
 
 ## AI Usage Patterns
@@ -53,22 +55,43 @@ AI thought process:
 ```
 
 **AI action:**
+
 ```json
 {
   "action": "create",
   "todos": [
-    {"content": "Research auth requirements", "activeForm": "Researching auth requirements", "status": "pending"},
-    {"content": "Design auth flow", "activeForm": "Designing auth flow", "status": "pending"},
-    {"content": "Implement auth module", "activeForm": "Implementing auth module", "status": "pending"},
-    {"content": "Write auth tests", "activeForm": "Writing auth tests", "status": "pending"},
-    {"content": "Document auth usage", "activeForm": "Documenting auth usage", "status": "pending"}
+    {
+      "content": "Research auth requirements",
+      "activeForm": "Researching auth requirements",
+      "status": "pending"
+    },
+    {
+      "content": "Design auth flow",
+      "activeForm": "Designing auth flow",
+      "status": "pending"
+    },
+    {
+      "content": "Implement auth module",
+      "activeForm": "Implementing auth module",
+      "status": "pending"
+    },
+    {
+      "content": "Write auth tests",
+      "activeForm": "Writing auth tests",
+      "status": "pending"
+    },
+    {
+      "content": "Document auth usage",
+      "activeForm": "Documenting auth usage",
+      "status": "pending"
+    }
   ]
 }
 ```
 
 ### Pattern 2: Update After Each Step
 
-```
+````
 [AI completes research]
 
 AI action:
@@ -83,7 +106,7 @@ AI action:
     {"content": "Document auth usage", "activeForm": "Documenting auth usage", "status": "pending"}
   ]
 }
-```
+````
 
 **Result:** AI updates plan, hook will inject reminder in next turn
 
@@ -103,13 +126,14 @@ Each todo must have:
 
 ```typescript
 {
-  content: string      // Imperative: "Run tests", "Build project"
-  activeForm: string   // Present continuous: "Running tests", "Building project"
-  status: "pending" | "in_progress" | "completed"
+  content: string; // Imperative: "Run tests", "Build project"
+  activeForm: string; // Present continuous: "Running tests", "Building project"
+  status: "pending" | "in_progress" | "completed";
 }
 ```
 
 **Rules:**
+
 - Keep ONE item as "in_progress" at a time (guidance, not enforced)
 - Mark "completed" immediately after finishing each step
 - Use imperative for content, present continuous for activeForm
@@ -119,6 +143,7 @@ Each todo must have:
 ### Actions
 
 **create**: Replace entire list with new todos
+
 ```json
 {
   "action": "create",
@@ -127,6 +152,7 @@ Each todo must have:
 ```
 
 **update**: Replace entire list (AI manages transitions)
+
 ```json
 {
   "action": "update",
@@ -135,6 +161,7 @@ Each todo must have:
 ```
 
 **list**: Return current todos
+
 ```json
 {
   "action": "list"
@@ -144,6 +171,7 @@ Each todo must have:
 ### Responses
 
 **create/update:**
+
 ```json
 {
   "status": "created|updated",
@@ -156,6 +184,7 @@ Each todo must have:
 ```
 
 **list:**
+
 ```json
 {
   "status": "listed",
@@ -188,12 +217,6 @@ Each todo must have:
 - **Validation:** Schema validation only (required fields, valid statuses)
 - **Events:** Emits TOOL_PRE and TOOL_POST for observability
 
-## See Also
-
-- [amplifier-module-hooks-todo-reminder](../amplifier-module-hooks-todo-reminder/README.md) - Hook that injects reminders
-- [Hook Context Injection Spec](../amplifier-core/docs/specs/HOOKS_CONTEXT_INJECTION.md) - How injection works
-- [bd-35](../.beads/amplifier-dev.jsonl) - Original investigation and design
-
 ## Testing
 
 Run integration tests:
@@ -207,7 +230,33 @@ python test_todo_multi_turn.py
 ```
 
 Both tests verify:
+
 - Tool CRUD operations work correctly
 - Hook injects reminders on prompt:submit
 - Context receives injected messages
 - Format matches TodoWrite display (✓/☐ symbols)
+
+## Contributing
+
+> [!NOTE]
+> This project is not currently accepting external contributions, but we're actively working toward opening this up. We value community input and look forward to collaborating in the future. For now, feel free to fork and experiment!
+
+Most contributions require you to agree to a
+Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
+the rights to use your contribution. For details, visit [Contributor License Agreements](https://cla.opensource.microsoft.com).
+
+When you submit a pull request, a CLA bot will automatically determine whether you need to provide
+a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
+provided by the bot. You will only need to do this once across all repos using our CLA.
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
+contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+## Trademarks
+
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
+trademarks or logos is subject to and must follow
+[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/legal/intellectualproperty/trademarks/usage/general).
+Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
+Any use of third-party trademarks or logos are subject to those third-party's policies.
