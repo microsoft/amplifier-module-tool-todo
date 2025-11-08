@@ -1,0 +1,17 @@
+[project]
+name = "amplifier-module-tool-todo"
+version = "1.0.0"
+description = "AI self-accountability tool for managing todo lists"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.entry-points."amplifier.modules"]
+tool-todo = "amplifier_module_tool_todo:mount"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = ["pytest>=8.4.2"]
