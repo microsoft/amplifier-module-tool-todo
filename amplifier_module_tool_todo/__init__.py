@@ -40,7 +40,7 @@ class TodoTool:
 
     @property
     def description(self) -> str:
-        return """Manage your todo list for tracking multi-step tasks.
+        return """Manage your todo list for tracking complex multi-step tasks.
 
 Use this tool to:
 - Create a todo list when starting complex multi-step work
@@ -53,7 +53,7 @@ Todo items have:
 - status: "pending" | "in_progress" | "completed"
 
 Recommended pattern:
-1. Create list when you start multi-step work
+1. Create list when you start complex multi-step work
 2. Update after completing each step
 3. Keep exactly ONE item as "in_progress" at a time
 4. Mark items "completed" immediately after finishing"""
