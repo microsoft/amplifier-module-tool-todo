@@ -4,6 +4,9 @@ This tool enables AI to create and manage its own todo list for tracking
 multi-step tasks. Works with hooks-todo-reminder for automatic context injection.
 """
 
+# Amplifier module metadata
+__amplifier_module_type__ = "tool"
+
 import logging
 from typing import Any
 
