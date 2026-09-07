@@ -198,7 +198,44 @@ cross-lane ordinal** — how many lanes have hit this is a whole-item question,
 answerable correctly only by the reader of the finished list, and never by a
 lane mid-flight.
 
-## 9. For whoever merges
+## 9. Incidents — both caught by reading a value back, not by an exit code
+
+1. **`gh pr edit --body-file` reported an error and applied nothing.** It failed
+   with `GraphQL: Projects (classic) is being deprecated … (repository.pullRequest.projectCards)`
+   and PR #3 was left carrying its two-line placeholder body — no run URLs at
+   all. Caught by `gh pr view 3 --json body` and re-applied with
+   `gh api -X PATCH repos/.../pulls/3 -F body=@…`, then verified a second time:
+   the live body now diffs clean against the committed `PR-BODY.md` (one
+   GitHub-appended trailing newline). **A sibling lane in this batch hit the
+   identical failure**; it is reproducible, not a fluke. A PR body is only as
+   good as its read-back, exactly as the publication marker demands for
+   branches.
+2. **`.gitignore`'s `*.log` silently swallowed the CI evidence** (see §4). Both
+   `git add` and `git commit` exited 0 while committing only the note.
+
+Applied preventively from a sibling lane's finding rather than rediscovered:
+the PR body was staged at a **lane-private path inside this repo**
+(`docs/lanes/j1e6-ci-tool-todo/PR-BODY.md`), never at a shared `/tmp/pr_body.md`
+— a sibling published *another lane's* text that way when two concurrent lanes
+wrote the same filename. Checked here: the live body contains **0** occurrences
+of any sibling repo's name.
+
+## 10. Final state
+
+| | |
+|---|---|
+| PR | https://github.com/microsoft/amplifier-module-tool-todo/pull/3 |
+| State | **OPEN, ready for review, NOT merged** (`mergeable=MERGEABLE`, `mergeStateStatus=BLOCKED` — review required) |
+| Branch | `lane/j1e6-ci-tool-todo` |
+| Head | the tip of `lane/j1e6-ci-tool-todo`. **The authoritative 40-hex sha is in `DONE.json`'s `publication` block**, read back from the remote *after* the last push — a sha written inside this file could only ever name the commit before the one that contains it |
+| Checks | **5/5 pass** — Lint (ruff), Tests 3.11 / 3.12 / 3.13, license/cla. Verified green on every pushed head, not only the workflow-only one |
+| Commits | `fa1f7cb` **workflow only** (+114/-0) · `7450414` lane note + evidence · `8e07148` PR body artifact · this note's own updates |
+
+Only `fa1f7cb` touches anything outside `docs/lanes/j1e6-ci-tool-todo/`. The
+GREEN run quoted in the PR body is deliberately the one on that workflow-only
+commit.
+
+## 11. For whoever merges
 
 1. **Do not expect this lane to have merged it.** PR #3 is *ready for review*,
    4/4 green, deliberately **not merged**.
