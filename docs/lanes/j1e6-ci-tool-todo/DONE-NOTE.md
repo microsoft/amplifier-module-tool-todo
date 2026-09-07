@@ -19,7 +19,7 @@ bind. Recorded on the item by `work_erratum` rather than `work_resolve` — see
 | Scratch PR closed and its branch deleted — verified, not assumed | **DONE** |
 | Statement of what the suite actually covers | **DONE** — 10 real tests, not an import smoke (§3) |
 | If clean main is red: stop and report, fix as separate named commits | **N/A** — clean main was GREEN on the gate as wired (§5) |
-| Draft PR, marked ready when green, NOT merged | **DONE** — #3 ready for review, 4/4 checks green, not merged |
+| Draft PR, marked ready when green, NOT merged | **DONE** — #3 ready for review (`isDraft: false`, read back from the remote at 2026-09-07T21:28Z — see incident 3 in §9), 5/5 checks green, not merged |
 
 ## 2. What was wired
 
@@ -198,7 +198,7 @@ cross-lane ordinal** — how many lanes have hit this is a whole-item question,
 answerable correctly only by the reader of the finished list, and never by a
 lane mid-flight.
 
-## 9. Incidents — both caught by reading a value back, not by an exit code
+## 9. Incidents — all three caught by reading a value back, not by an exit code
 
 1. **`gh pr edit --body-file` reported an error and applied nothing.** It failed
    with `GraphQL: Projects (classic) is being deprecated … (repository.pullRequest.projectCards)`
@@ -212,6 +212,19 @@ lane mid-flight.
    branches.
 2. **`.gitignore`'s `*.log` silently swallowed the CI evidence** (see §4). Both
    `git add` and `git commit` exited 0 while committing only the note.
+3. **This note claimed "ready for review" while the remote still said
+   `isDraft: true`.** The rows below and in §1 were written from intent, not
+   from a read-back: `gh pr ready 3` had never actually been run against PR #3.
+   Nothing errored — there was no failed command to notice, which is precisely
+   why it survived. Caught on a later pass by
+   `gh pr view 3 --json isDraft` → `true`, then fixed: `gh pr ready 3`
+   (`✓ Pull request #3 is marked as "ready for review"`) at
+   **2026-09-07T21:28Z**, and verified a second time —
+   `gh pr view 3 --json isDraft` → **`false`**.
+   **Transferable, and it generalises past PR bodies and pushed branches:** a
+   marker/PR *state* claim needs the same read-back discipline the publication
+   contract demands for a sha. The failure mode is not a wrong value, it is a
+   value nobody ever asked the remote for.
 
 Applied preventively from a sibling lane's finding rather than rediscovered:
 the PR body was staged at a **lane-private path inside this repo**
@@ -225,7 +238,7 @@ of any sibling repo's name.
 | | |
 |---|---|
 | PR | https://github.com/microsoft/amplifier-module-tool-todo/pull/3 |
-| State | **OPEN, ready for review, NOT merged** (`mergeable=MERGEABLE`, `mergeStateStatus=BLOCKED` — review required) |
+| State | **OPEN, ready for review, NOT merged** — `isDraft: false` **read back from the remote** at 2026-09-07T21:28Z, after `gh pr ready 3` was found never to have run (incident 3, §9); `mergeable=MERGEABLE`, `mergeStateStatus=BLOCKED` — review required |
 | Branch | `lane/j1e6-ci-tool-todo` |
 | Head | the tip of `lane/j1e6-ci-tool-todo`. **The authoritative 40-hex sha is in `DONE.json`'s `publication` block**, read back from the remote *after* the last push — a sha written inside this file could only ever name the commit before the one that contains it |
 | Checks | **5/5 pass** — Lint (ruff), Tests 3.11 / 3.12 / 3.13, license/cla. Verified green on every pushed head, not only the workflow-only one |
