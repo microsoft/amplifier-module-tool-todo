@@ -1,0 +1,44 @@
+RED RUN 34157370586 -- scratch PR #2 (closed), branch ci/red-proof-j1e6 (deleted)
+https://github.com/microsoft/amplifier-module-tool-todo/actions/runs/34157370586
+head c0a2d127  |  conclusion: failure  |  4 of 4 checks red
+
+Captured verbatim from `gh run view 34157370586 --log`. Tabs -> ' | '.
+The PASSING count beside each failure is the load-bearing evidence: the
+real suite collected and executed. A setup or import error would show
+0 passed and would prove nothing.
+
+===== Tests job -- genuine TEST failure on all three Pythons =====
+Tests (Python 3.13) | Run test suite | 2026-09-07T19:54:56.0200181Z ______________________ test_red_proof_deliberate_failure _______________________
+Tests (Python 3.13) | Run test suite | 2026-09-07T19:54:56.0200541Z     def test_red_proof_deliberate_failure():
+Tests (Python 3.13) | Run test suite | 2026-09-07T19:54:56.0200932Z >       assert 1 == 2, "deliberate failure to prove the CI test job can go red"
+Tests (Python 3.13) | Run test suite | 2026-09-07T19:54:56.0201802Z E       assert 1 == 2
+Tests (Python 3.13) | Run test suite | 2026-09-07T19:54:56.0202046Z tests/test_red_proof.py:11: AssertionError
+Tests (Python 3.13) | Run test suite | 2026-09-07T19:54:56.0202431Z =========================== short test summary info ============================
+Tests (Python 3.13) | Run test suite | 2026-09-07T19:54:56.0203012Z FAILED tests/test_red_proof.py::test_red_proof_deliberate_failure - AssertionError: deliberate failure to prove the CI test job can go red
+Tests (Python 3.13) | Run test suite | 2026-09-07T19:54:56.0203478Z assert 1 == 2
+Tests (Python 3.13) | Run test suite | 2026-09-07T19:54:56.0203700Z 1 failed, 10 passed in 0.06s
+Tests (Python 3.11) | Run test suite | 2026-09-07T19:54:56.1608333Z ______________________ test_red_proof_deliberate_failure _______________________
+Tests (Python 3.11) | Run test suite | 2026-09-07T19:54:56.1608893Z     def test_red_proof_deliberate_failure():
+Tests (Python 3.11) | Run test suite | 2026-09-07T19:54:56.1609302Z >       assert 1 == 2, "deliberate failure to prove the CI test job can go red"
+Tests (Python 3.11) | Run test suite | 2026-09-07T19:54:56.1610149Z E       assert 1 == 2
+Tests (Python 3.11) | Run test suite | 2026-09-07T19:54:56.1610380Z tests/test_red_proof.py:11: AssertionError
+Tests (Python 3.11) | Run test suite | 2026-09-07T19:54:56.1610680Z =========================== short test summary info ============================
+Tests (Python 3.11) | Run test suite | 2026-09-07T19:54:56.1611344Z FAILED tests/test_red_proof.py::test_red_proof_deliberate_failure - AssertionError: deliberate failure to prove the CI test job can go red
+Tests (Python 3.11) | Run test suite | 2026-09-07T19:54:56.1611831Z assert 1 == 2
+Tests (Python 3.11) | Run test suite | 2026-09-07T19:54:56.1612022Z 1 failed, 10 passed in 0.07s
+Tests (Python 3.12) | Run test suite | 2026-09-07T19:54:55.1456743Z ______________________ test_red_proof_deliberate_failure _______________________
+Tests (Python 3.12) | Run test suite | 2026-09-07T19:54:55.1457317Z     def test_red_proof_deliberate_failure():
+Tests (Python 3.12) | Run test suite | 2026-09-07T19:54:55.1458144Z >       assert 1 == 2, "deliberate failure to prove the CI test job can go red"
+Tests (Python 3.12) | Run test suite | 2026-09-07T19:54:55.1460601Z E       assert 1 == 2
+Tests (Python 3.12) | Run test suite | 2026-09-07T19:54:55.1461077Z tests/test_red_proof.py:11: AssertionError
+Tests (Python 3.12) | Run test suite | 2026-09-07T19:54:55.1461704Z =========================== short test summary info ============================
+Tests (Python 3.12) | Run test suite | 2026-09-07T19:54:55.1463107Z FAILED tests/test_red_proof.py::test_red_proof_deliberate_failure - AssertionError: deliberate failure to prove the CI test job can go red
+Tests (Python 3.12) | Run test suite | 2026-09-07T19:54:55.1464290Z assert 1 == 2
+Tests (Python 3.12) | Run test suite | 2026-09-07T19:54:55.1464643Z 1 failed, 10 passed in 0.11s
+
+===== Lint job -- failed separately, for its own reason (F401) =====
+Lint (ruff) | Lint | 2026-09-07T19:54:52.7565729Z F401 [*] `os` imported but unused
+Lint (ruff) | Lint | 2026-09-07T19:54:52.7571349Z 8 | import os
+Lint (ruff) | Lint | 2026-09-07T19:54:52.7573185Z   - import os
+Lint (ruff) | Lint | 2026-09-07T19:54:52.7573944Z Found 1 error.
+Lint (ruff) | Lint | 2026-09-07T19:54:52.7632798Z ##[error]Process completed with exit code 1.

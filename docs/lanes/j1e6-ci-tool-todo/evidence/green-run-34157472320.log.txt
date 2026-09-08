@@ -1,0 +1,22 @@
+GREEN RUN 34157472320 -- PR #3, workflow-only commit fa1f7cb3a4426378e1130855cdfed812b291f7b6
+https://github.com/microsoft/amplifier-module-tool-todo/actions/runs/34157472320
+conclusion: success  |  4 of 4 checks green
+
+Captured verbatim from `gh run view 34157472320 --log`. Tabs -> ' | '.
+
+===== Tests job -- the repo's real 10-test suite, three Pythons =====
+Tests (Python 3.11) | Run test suite | 2026-09-07T19:56:32.4814292Z 10 passed in 0.07s
+Tests (Python 3.12) | Run test suite | 2026-09-07T19:56:32.3210625Z 10 passed in 0.07s
+Tests (Python 3.13) | Run test suite | 2026-09-07T19:56:35.4846201Z 10 passed in 0.08s
+
+===== Lint job -- pinned ruff, pinned rule set =====
+Lint (ruff) | Lint | ﻿2026-09-07T19:56:30.4011321Z ##[group]Run uvx ruff@0.16.6 check --isolated --select E4,E7,E9,F .
+Lint (ruff) | Lint | 2026-09-07T19:56:30.4011787Z [36;1muvx ruff@0.16.6 check --isolated --select E4,E7,E9,F .[0m
+Lint (ruff) | Lint | 2026-09-07T19:56:30.4036681Z shell: /usr/bin/bash -e {0}
+Lint (ruff) | Lint | 2026-09-07T19:56:30.4036952Z env:
+Lint (ruff) | Lint | 2026-09-07T19:56:30.4037174Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+Lint (ruff) | Lint | 2026-09-07T19:56:30.4037462Z ##[endgroup]
+Lint (ruff) | Lint | 2026-09-07T19:56:30.7036085Z Downloading ruff (9.8MiB)
+Lint (ruff) | Lint | 2026-09-07T19:56:30.8506579Z  Downloaded ruff
+Lint (ruff) | Lint | 2026-09-07T19:56:30.8528674Z Installed 1 package in 1ms
+Lint (ruff) | Lint | 2026-09-07T19:56:30.8942286Z All checks passed!

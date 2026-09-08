@@ -1,0 +1,114 @@
+name: CI
+
+# Runs on every push to main and every pull request targeting main.
+#
+# There are deliberately NO path filters. A path filter would make this
+# workflow report "success" on a PR it never actually ran for (a skipped
+# required check reports neutral/green), which is a way to be green
+# vacuously. For the same reason nothing below suppresses a failure: no
+# error-tolerant step keys, no shell-level `|| :` on any command. Every step
+# here either passes or fails the run.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Minimal read-only token. Nothing here needs secrets, and nothing here
+# calls an LLM -- no API keys, no cost per run.
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Lint -- ruff, at a PINNED version AND a pinned rule set.
+  #
+  # Both pins are load-bearing. "ruff's default rules" is a moving target: on
+  # this tree, `ruff@0.16.6 check --isolated` with the FULL modern default set
+  # reports 2 findings (I001 import sorting, PLR1711 useless return) -- neither
+  # is a defect, both are style opinions this repo has never adopted. Wiring
+  # the full default set would make CI red on day one for reasons unrelated to
+  # correctness, and would make a future ruff release turn an unrelated
+  # upstream change into a red PR nobody caused.
+  #
+  # E4 (imports) / E7 (statement) / E9 (syntax + IO errors) / F (pyflakes) is
+  # the breakage tier: undefined names, unused imports, syntax errors. Measured
+  # on this tree at 0.16.6: "All checks passed!".
+  #
+  # `--isolated` so the result does not depend on a ruff.toml/pyproject config
+  # discovered anywhere up the directory tree -- the runner and a contributor's
+  # laptop then run byte-for-byte the same check.
+  #
+  # `ruff format --check` is deliberately NOT wired: at 0.16.6 defaults it
+  # would reformat 1 file (amplifier_module_tool_todo/__init__.py, purely
+  # line-wrapping). That is a whitespace change and does not belong in the PR
+  # that introduces CI. Named here so the next contributor sees a decision
+  # rather than an oversight; the fix is `uvx ruff@0.16.6 format .`
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Lint
+        run: uvx ruff@0.16.6 check --isolated --select E4,E7,E9,F .
+
+  # ---------------------------------------------------------------------------
+  # Tests -- the repo's real suite, across supported Python versions.
+  #
+  # This is NOT an import smoke. tests/ carries 10 real tests:
+  #   * test_behavioral.py  -- amplifier-core's ToolBehaviorTests, inherited
+  #   * test_validation.py  -- amplifier-core's ToolStructuralTests, inherited
+  #   * test_description_pin.py -- the byte-for-byte pin on the tool
+  #     description added by PR #1 (63f6ef5). Until this workflow existed,
+  #     NOTHING executed that pin on push or PR: the guard was committed but
+  #     never run by anything except a human remembering to.
+  #
+  # `uv run pytest` picks up [tool.pytest.ini_options] from pyproject.toml
+  # (testpaths = ["tests"], --import-mode=importlib, asyncio_mode = strict),
+  # so CI and a local run are the same command with the same settings. This
+  # repo has no Makefile -- it was removed deliberately in bb3d15c -- so
+  # there is no check target to mirror.
+  #
+  # requires-python = ">=3.11": cover the floor and the two current minors.
+  #
+  # `uv sync` (not `--frozen`) installs from the committed uv.lock, which pins
+  # the amplifier-core git dependency to an exact commit. That is deliberate:
+  # the suite inherits its behavioral/structural tests FROM amplifier-core, so
+  # an unpinned floating `main` would make this repo's CI go red for a change
+  # made in another repo. Bumping amplifier-core is a lockfile commit here.
+  #
+  # No uv cache is configured. astral-sh/setup-uv's cache keys on
+  # `**/uv.lock`; this repo does commit one, so enabling it would work -- but
+  # this suite installs 16 packages and runs in well under a second, so the
+  # cache buys nothing and adds a failure mode ahead of the tests.
+  # ---------------------------------------------------------------------------
+  test:
+    name: Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    # A hang must fail LOUDLY and fast, not burn runner time to the 6h
+    # default -- a job stuck at "in_progress" reads as "not done yet" rather
+    # than "broken", which is how a false green gets merged.
+    timeout-minutes: 10
+    strategy:
+      # One Python failing must not cancel the others: knowing whether a
+      # break is version-specific is the whole point of the matrix.
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: uv sync --all-extras --dev
+
+      - name: Run test suite
+        run: uv run pytest -v
