@@ -111,4 +111,4 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Run test suite
-        run: uv run pytest -q
+        run: uv run pytest -v
