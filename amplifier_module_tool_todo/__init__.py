@@ -25,8 +25,7 @@ async def mount(coordinator: ModuleCoordinator, config: dict[str, Any] | None = 
     coordinator.todo_state = []  # type: ignore[attr-defined]
 
     tool = TodoTool(coordinator)
-    # Register tool in mount_points
-    coordinator.mount_points["tools"][tool.name] = tool
+    await coordinator.mount("tools", tool, name=tool.name)
     logger.info("Mounted tool-todo")
     return
 
